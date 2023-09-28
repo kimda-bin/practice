@@ -1,31 +1,37 @@
-const db = [
-    {
-        id: 1,
-        title: "추석 연휴가 시작되었습니다",
-        done: false,
-    },
-    {
-        id: 2,
-        title: "즐거운 추석연휴보내세요",
-        done: false,
-    },
-    {
-        id: 3,
-        title: "과제도 꼭 해주시기 바랍니다",
-        done: false,
-    },
-    {
-        id: 4,
-        title: "모두 고향 잘 다녀오세요",
-        done: false,
-    },
-];
+const { Todo } = require("../models");
 
 const get_todo = (req, res) => {
-    res.json({ data: db });
+  Todo.findAll().then((result) => {
+    res.json({ data: result });
+  });
 };
-const post_todo = (req, res) => {};
-const patch_todo = (req, res) => {};
-const delete_todo = (req, res) => {};
+const post_todo = async (req, res) => {
+  const { title } = req.body;
+  Todo.create({ title }).then(() => {
+    res.json({ result: true });
+  });
+};
+const patch_todo = (req, res) => {
+  if (req.body.done === undefined) {
+    const { id, title } = req.body;
+    Todo.update({ title }, { where: { id: id } }).then(() => {
+      res.json({ result: true });
+    });
+  } else {
+    const { id, done } = req.body;
+    console.log(done);
+    Todo.update({ done: done.done }, { where: { id: id.id } }).then(() => {
+      res.json({ result: true });
+    });
+  }
+};
+const delete_todo = (req, res) => {
+  const { id } = req.body;
+  Todo.destroy({
+    where: { id: id.id },
+  }).then(() => {
+    res.json({ result: true });
+  });
+};
 
 module.exports = { get_todo, post_todo, patch_todo, delete_todo };
